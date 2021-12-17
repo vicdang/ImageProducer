@@ -130,3 +130,7 @@ dmypy.json
 
 # pycharm
 .idea
+
+# template
+/img/templatetemplate1.png
+/img/templatetemplate2.png
