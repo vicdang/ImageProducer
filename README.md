@@ -1,1 +1,2 @@
 # ImageProducer
+run "run.bat"

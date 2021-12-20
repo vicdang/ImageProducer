@@ -1,3 +1,3 @@
 @echo off
-python .\execute.py exec -c
-pause
+python .\execute_gui.py
+:: pause

@@ -23,17 +23,10 @@ import numpy as np
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
 
-try:
-   from configparser import ConfigParser
-except ImportError:
-   from ConfigParser import ConfigParser  # ver. < 3.0
 
-# instantiate
-config = ConfigParser()
-# parse existing file
-config.read('./config.ini')
 logger = logging.getLogger()
 CUR_PATH = pathlib.Path().resolve()
+config = None
 
 class ImageSizeException(Exception):
    """ImageSizeException"""
@@ -45,6 +38,18 @@ class UserInfoException(Exception):
 
 class Utility(object):
    """docstring for Utility"""
+
+   @staticmethod
+   def get_config():
+      try:
+         from configparser import ConfigParser
+      except ImportError:
+         from ConfigParser import ConfigParser  # ver. < 3.0
+      # instantiate
+      config = ConfigParser()
+      # parse existing file
+      config.read('./config.ini')
+      return config
 
    @staticmethod
    def validate(string, regex):
@@ -131,18 +136,18 @@ class ImageMaker(object):
       self.name = name
       self.src_path = os.path.join(CUR_PATH, arg.src_path)
       self.des_path = os.path.join(CUR_PATH, arg.des_path)
-      self.tmp_path = os.path.join(CUR_PATH, conf.get("general", "tmpPath"))
+      self.tmp_path = os.path.join(CUR_PATH, conf.get("general", "tmppath"))
       self.template = os.path.join(CUR_PATH, arg.template)
       self.debug = arg.debug or False
-      self.img_prefix = conf.get("general", "imgPrefix")
-      self.tpl_avata_x = conf.getint("template", "avataX")
-      self.tpl_avata_y = conf.getint("template", "avataY")
-      self.tpl_avata_w = conf.getint("template", "avataW")
-      self.tpl_avata_h = conf.getint("template", "avataH")
+      self.img_prefix = conf.get("general", "imgprefix")
+      self.tpl_avata_x = conf.getint("template", "avatax")
+      self.tpl_avata_y = conf.getint("template", "avatay")
+      self.tpl_avata_w = conf.getint("template", "avataw")
+      self.tpl_avata_h = conf.getint("template", "avatah")
       self.tpl_w = conf.getint("template", "width")
       self.tpl_h = conf.getint("template", "height")
       self.conf = conf
-      self.base_text_size = self.conf.getint("general", "baseTextSize")
+      self.base_text_size = self.conf.getint("general", "basetextsize")
       self.positions = {"A": "Assistant",
                         "SA": "Senior Assistant",
                         "SE": "Senior Engineer",
@@ -173,7 +178,7 @@ class ImageMaker(object):
       faces = face_cascade.detectMultiScale(gray_image,
                                             # scaleFactor=1.2,
                                             scaleFactor=self.conf.getfloat(
-                                                      "avata", "scaleFactor"),
+                                                      "avata", "scalefactor"),
                                             minNeighbors=3,
                                             minSize=(30, 30),
                                             maxSize=(200, 200),
@@ -219,7 +224,7 @@ class ImageMaker(object):
       """
       files = []
       format_list = ['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG']
-      print(os.listdir(src_path))
+      logger.debug(os.listdir(src_path))
       f = [fi for fi in os.listdir(src_path) if os.path.isfile(src_path + fi)]
       logger.debug("File List : %s" % [item for item in f])
       for file in f:
@@ -344,7 +349,7 @@ class ImageMaker(object):
       # Make RQ code
       qr = qrcode.QRCode(version=self.conf.getint("qrcode", "version"),
                          error_correction=qrcode.constants.ERROR_CORRECT_L,
-                         box_size=self.conf.getint("qrcode", "boxSize"),
+                         box_size=self.conf.getint("qrcode", "boxsize"),
                          border=self.conf.getint("qrcode", "border"))
       img_info = "{Fullname: " + self.user_name + ",Position: " + \
                  self.user_pos + ",ID: " + self.user_id + "}"
@@ -355,9 +360,9 @@ class ImageMaker(object):
          qr.add_data(img_info)
          qr.make(fit=self.conf.get("qrcode", "fit"))
          qr_img = qr.make_image(fill_color=self.conf.get("qrcode",
-                                                         "fillColor"),
+                                                         "fillcolor"),
                                 back_color=self.conf.get("qrcode",
-                                                         "backColor"))
+                                                         "backcolor"))
       qrx = self.conf.getint("qrcode", "qrx")
       qry = self.conf.getint("qrcode", "qry")
       self.bg_img.paste(qr_img, (qrx, qry), mask=qr_img)
@@ -380,7 +385,7 @@ class ImageMaker(object):
          self.crop_img()
          # Make background
          self.bg_img = Image.new('RGBA', (tpl_w, tpl_h), self.conf.get(
-               "general", "backgroundColor"))
+               "general", "backgroundcolor"))
          img_cropt_w, img_cropt_h = self.img_cropt.size
          img_cropt_pos = (int(self.tpl_avata_x - (img_cropt_w / 2)),
                           int(self.tpl_avata_y - (img_cropt_h / 2)))
@@ -396,7 +401,7 @@ class ImageMaker(object):
          draw = ImageDraw.Draw(self.bg_img)
 
          curr_y += self.tpl_avata_y + img_cropt_pos[1]
-         th = self.conf.getint("username", "topPad")
+         th = self.conf.getint("username", "toppad")
          if self.user_name:
             curr_y += th
             if not self.arg.auto_size:
@@ -419,7 +424,7 @@ class ImageMaker(object):
                   "username", "color"), font=font)
 
          if self.user_pos:
-            curr_y += th + self.conf.getint("position", "topPad")
+            curr_y += th + self.conf.getint("position", "toppad")
             if not self.arg.auto_size:
                size = self.conf.getint("position", "size")
             else:
@@ -433,7 +438,7 @@ class ImageMaker(object):
                   "position", "color"), font=font)
 
          if self.user_id:
-            curr_y += th + self.conf.getint("userid", "topPad")
+            curr_y += th + self.conf.getint("userid", "toppad")
             if not self.arg.auto_size:
                size = self.conf.getint("userid", "size")
             else:
@@ -468,13 +473,13 @@ def add_args(parser, action='exec'):
                           action='store_true', default=False,
                           help='Check out put')
       parser.add_argument('-s', '--src-path',
-                          default=config.get("general", "srcPath"),
+                          default=config.get("general", "srcpath"),
                           help='Path of the source folder')
       parser.add_argument('-f', '--des-path',
-                          default=config.get("general", "desPath"),
+                          default=config.get("general", "despath"),
                           help='Path of the destination folder')
       parser.add_argument('-t', '--template',
-                          default=config.get("template", "fileName"),
+                          default=config.get("template", "filename"),
                           help='Template file name')
       parser.add_argument('-q', '--qr-text',
                           help='RQ code text')
@@ -522,7 +527,7 @@ def setup_logging(debug=False):
    global logger
    logger = logging.getLogger('sLogger')
 
-def main(args):
+def main(args, config):
    """
    Main processing
    :return:
@@ -532,13 +537,13 @@ def main(args):
    files = []
    src_path = os.path.join(CUR_PATH, args.src_path)
    des_path = os.path.join(CUR_PATH, args.des_path)
-   tmp_path = os.path.join(CUR_PATH, config.get("general", "tmpPath"))
-   cv_path = os.path.join(CUR_PATH, config.get("general", "convertedPath"))
+   tmp_path = os.path.join(CUR_PATH, config.get("general", "tmppath"))
+   cv_path = os.path.join(CUR_PATH, config.get("general", "convertedpath"))
    format_list = ['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG']
 
    if args.convert:
       ImageMaker.convert_images(src_path, cv_path)
-      args.src_path = config.get("general", "convertedPath")
+      args.src_path = config.get("general", "convertedpath")
       src_path = cv_path
    if args.check_path:
       Utility.check_folder([src_path, des_path, tmp_path])
@@ -565,11 +570,13 @@ def main(args):
       Utility.countdown(int(args.interval))
 
 if __name__ == "__main__":
+   config = Utility.get_config()
    args = parse_cli()
    setup_logging(args.debug)
-   try:
-      logging.debug('Execute with arguments :')
-      logging.debug(args)
-      main(args)
-   except Exception as err:
-      logging.error('Error performing action: %s, %s' % (args.action, err))
+   main(args, config)
+   # try:
+   #    logging.debug('Execute with arguments :')
+   #    logging.debug(args)
+   #    main(args, config)
+   # except Exception as err:
+   #    logging.error('Error performing action: %s, %s' % (args.action, err))
