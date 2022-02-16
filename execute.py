@@ -249,11 +249,11 @@ class ImageMaker(object):
          if exif:
             exif = dict(exif.items())
             if exif[orientation] == 3:
-               self.img.rotate(180, expand=True)
+              self.img.rotate(180, expand=True)
             elif exif[orientation] == 6:
-               self.img.rotate(270, expand=True)
+              self.img.rotate(270, expand=True)
             elif exif[orientation] == 8:
-               self.img.rotate(90, expand=True)
+              self.img.rotate(90, expand=True)
       except Exception as err:
          logger.error(err)
          # There is AttributeError: _getexif sometimes.
@@ -351,8 +351,7 @@ class ImageMaker(object):
                          error_correction=qrcode.constants.ERROR_CORRECT_L,
                          box_size=self.conf.getint("qrcode", "boxsize"),
                          border=self.conf.getint("qrcode", "border"))
-      img_info = "{Fullname: " + self.user_name + ",Position: " + \
-                 self.user_pos + ",ID: " + self.user_id + "}"
+      img_info = "{Fullname: %s,Position: %s, Badge_Id: %s, Company: %s" % (self.user_name, self.user_pos, self.user_id, "www.tmasolutions.com")
       logger.info("info: {}".format(img_info))
       if self.arg.qr_text:
          qr_img = qrcode.make(self.arg.qr_text)

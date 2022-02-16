@@ -19,7 +19,7 @@ from tkinter import colorchooser as tkcolor
 import subprocess
 
 TITLE = "Image Producer"
-CONF = './config_base.ini'
+CONF = './config.ini'
 SEED = 3
 HEIGHT = 500
 WIDTH = 800
@@ -87,7 +87,7 @@ class MainWindow(tk.Frame):
       self.textbox.insert(tk.END, '\n'.join([f'{k}:{v[1]}' for k, v in
                                              self.dict_val.items()]))
       self.save_config()
-      process = subprocess.Popen('python execute.py -d exec -c',
+      process = subprocess.Popen('python execute.py exec -c',
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.STDOUT,
                                  shell=True)

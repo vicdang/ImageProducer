@@ -132,8 +132,11 @@ dmypy.json
 .idea
 
 # template
-/img/templatetemplate1.png
-/img/templatetemplate2.png
+/img/tmp_img/
+/img/src_img/
+/img/des_img/
+/img/cv_img/
+/img/template/
 
 # test
 /test_gui
