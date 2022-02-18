@@ -132,10 +132,10 @@ dmypy.json
 .idea
 
 # template
-/img/tmp_img/
-/img/src_img/
-/img/des_img/
-/img/cv_img/
+/img/tmp_img/*
+/img/src_img/*
+/img/des_img/*
+/img/cv_img/*
 /img/template/
 
 # test
