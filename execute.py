@@ -412,9 +412,10 @@ class ImageMaker(object):
                font = ImageFont.truetype(os.path.join(CUR_PATH,
                                                       self.conf.get(
                                                             "username",
-                                                            "font")), size)
+                                                            "font")), n_size)
                msg = self.user_name.upper().strip()
                tw, th = draw.textsize(msg, font=font)
+               logger.info("info: {} {} {}".format(msg, tw, th))
                if tw < (tpl_w - 50):
                   break
                else:
