@@ -8,7 +8,7 @@ Copyright (C) 2021
 @Version: 1.0
 ---------------------------
  Usage example:
-   - demo1.py <options>
+   - python execute_gui.py <options>
 
 """
 import re
