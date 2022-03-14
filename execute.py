@@ -150,6 +150,7 @@ class ImageMaker(object):
       self.base_text_size = self.conf.getint("general", "basetextsize")
       self.positions = {"A": "Assistant",
                         "SA": "Senior Assistant",
+                        "SME": "Subject Matter Expert",
                         "SE": "Senior Engineer",
                         "TL": "Team Lead",
                         "PM": "Project Manager",
