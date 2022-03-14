@@ -16,6 +16,7 @@ import sys
 import tkinter as tk
 from tkinter import filedialog as fd
 from tkinter import colorchooser as tkcolor
+from tkinter import messagebox
 import subprocess
 
 TITLE = "Image Producer"
@@ -34,6 +35,7 @@ class MainWindow(tk.Frame):
       self.dict_val = {}
       self.fit = tk.BooleanVar()
       self.font = ('Lucida Grande', 12)
+      self.plogger = None
       self.init_window()
       self.create_widgets()
 
@@ -67,10 +69,10 @@ class MainWindow(tk.Frame):
       self.textbox.yview('end')
       vsb.pack(side="right", fill="y")
       self.textbox.pack(fill="both", expand="yes", side="right",
-                        padx=5, pady=5, ipadx=5, ipady=5)
+                        padx=10, pady=10, ipadx=5, ipady=5)
       # create instance of file like object
-      pl = PrintLogger(self.textbox)
-      sys.stdout = pl
+      self.plogger = PrintLogger(self.textbox)
+      # sys.stdout = pl
       btnrun = tk.Button(lfb, text="Execute", command=self.execute,
                          fg="Black", bg="Green", height=2, width=10)
       btnrun.pack(fill="both", expand="yes", side="right",
@@ -84,15 +86,21 @@ class MainWindow(tk.Frame):
       """
       Execute
       """
-      self.textbox.insert(tk.END, '\n'.join([f'{k}:{v[1]}' for k, v in
-                                             self.dict_val.items()]))
+      self.plogger.insert('\n'.join([f'{k}:{v[1]}' for k,
+                                                       v in self.dict_val.items()]))
       self.save_config()
       process = subprocess.Popen('python execute.py exec -c',
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.STDOUT,
                                  shell=True)
       output, error = process.communicate()
-      self.textbox.insert(tk.END, output)
+      if error:
+         messagebox.showerror(title="ERROR", message=error, parent=self.master)
+      else:
+         self.plogger.insert(output)
+         messagebox.showinfo(title="Completed",
+                             message="Executed successfully!",
+                             parent=self.master)
 
    def select_text(self, event, key):
       """
@@ -244,12 +252,14 @@ class PrintLogger(object):  # create file like object
    def __init__(self, textbox):  # pass reference to text widget
       self.textbox = textbox  # keep ref
 
-   def write(self, text):
+   def insert(self, text, prefix=" - "):
       """
       write line to term
       :param text:
+      :param prefix:
       """
-      self.textbox.insert(tk.END, text)  # write text to textbox
+      self.textbox.insert(tk.END, "%s%s" % (prefix, text))
+      self.textbox.see("end")
       # could also scroll to end of textbox here to make sure always visible
 
    def flush(self):  # needed for file like object

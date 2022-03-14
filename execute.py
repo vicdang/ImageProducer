@@ -148,16 +148,8 @@ class ImageMaker(object):
       self.tpl_h = conf.getint("template", "height")
       self.conf = conf
       self.base_text_size = self.conf.getint("general", "basetextsize")
-      self.positions = {"A": "Assistant",
-                        "SA": "Senior Assistant",
-                        "SME": "Subject Matter Expert",
-                        "SE": "Senior Engineer",
-                        "TL": "Team Lead",
-                        "PM": "Project Manager",
-                        "SM": "Senior Manager",
-                        "D": "Director",
-                        "E": "Engineer",
-                        "SD": "Senior Director"}
+      with open("positions.json", "r") as pos_file:
+         self.positions = json.load(pos_file)
       self.re_name = "^[\w\.\- ]+$"
       self.re_id = "^[\w]?[\d]+$"
 
