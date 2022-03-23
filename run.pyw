@@ -139,7 +139,6 @@ class MainWindow(tk.Frame):
                              message="Executed successfully!",
                              parent=self.master)
       self.plogger.insert("Stop ...")
-      self.kill_all()
 
    def select_text(self, event, key):
       """

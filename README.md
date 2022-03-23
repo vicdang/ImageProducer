@@ -66,7 +66,7 @@ ImageProducer/
 ### Execute command
 ```
 # For quick start
-Execute "run.bat" (doubeclick or run by cmd)
+Execute "run.pyw" (doubeclick or run by cmd)
 
 # For quick start with GUI
 $ python execute_gui.py

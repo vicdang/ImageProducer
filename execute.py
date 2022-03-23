@@ -16,6 +16,7 @@ import re
 import time
 import pathlib
 import sys
+import unicodedata
 from argparse import ArgumentDefaultsHelpFormatter as Formatter
 
 import cv2
@@ -344,7 +345,8 @@ class ImageMaker(object):
                          error_correction=qrcode.constants.ERROR_CORRECT_L,
                          box_size=self.conf.getint("qrcode", "boxsize"),
                          border=self.conf.getint("qrcode", "border"))
-      img_info = "{Fullname: %s,Position: %s, Badge_Id: %s, Company: %s" % (self.user_name, self.user_pos, self.user_id, "www.tmasolutions.com")
+      name = unicodedata.normalize('NFKD', self.user_name).encode('ascii', 'ignore')
+      img_info = "Fullname: %s,Position: %s, Badge_Id: %s, Company: %s" % (name, self.user_pos, self.user_id, "www.tmasolutions.com")
       logger.info("info: {}".format(img_info))
       if self.arg.qr_text:
          qr_img = qrcode.make(self.arg.qr_text)
